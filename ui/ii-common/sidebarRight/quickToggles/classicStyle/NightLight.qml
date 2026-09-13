@@ -1,0 +1,26 @@
+import "../../../services"
+import "../../../stubs"
+import "../../../widgets"
+import QtQuick
+
+// Vendored near-verbatim from ii's .../classicStyle/NightLight.qml.
+QuickToggleButton {
+    id: nightLightButton
+    toggled: Hyprsunset.temperatureActive
+    buttonIcon: Config.options.light.night.automatic ? "night_sight_auto" : "bedtime"
+    onClicked: {
+        Hyprsunset.toggleTemperature()
+    }
+
+    altAction: () => {
+        Config.options.light.night.automatic = !Config.options.light.night.automatic
+    }
+
+    Component.onCompleted: {
+        Hyprsunset.fetchState()
+    }
+
+    StyledToolTip {
+        text: Translation.tr("Night Light | Right-click to toggle Auto mode")
+    }
+}

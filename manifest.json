@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "trevor.ii-control-center",
+  "name": "ii Control Center",
+  "version": "0.3.0",
+  "author": "Trevor",
+  "description": "illogical-impulse-styled control center: Android quick-toggle grid (17 toggles), sliders, calendar + to-do, ported from ii/sidebarRight. Right-click actions open Omarchy/native equivalents. Deploys with bin/setup.sh.",
+  "kinds": ["bar-widget", "overlay"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "barWidget": "ui/Bar.qml",
+    "overlay": "ui/ControlCenter.qml"
+  },
+  "barWidget": {
+    "displayName": "ii Control Center",
+    "description": "Open the illogical-impulse control center",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

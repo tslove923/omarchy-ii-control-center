@@ -1,0 +1,12 @@
+StyledText 1.0 StyledText.qml
+MaterialSymbol 1.0 MaterialSymbol.qml
+WavyLine 1.0 WavyLine.qml
+StyledToolTipContent 1.0 StyledToolTipContent.qml
+StyledToolTip 1.0 StyledToolTip.qml
+StyledSlider 1.0 StyledSlider.qml
+ButtonGroup 1.0 ButtonGroup.qml
+GroupButton 1.0 GroupButton.qml
+WindowDialog 1.0 WindowDialog.qml
+WindowDialogTitle 1.0 WindowDialogTitle.qml
+WindowDialogSeparator 1.0 WindowDialogSeparator.qml
+WindowDialogButtonRow 1.0 WindowDialogButtonRow.qml

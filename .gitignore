@@ -1,0 +1,18 @@
+# Internal working docs — not part of the published plugin
+HANDOFF.md
+CLOSE-OUT-PROMPT.md
+reference-ii/
+
+# QML/Quickshell caches
+*.qmlc
+qmlcache/
+.qmlcache/
+
+# Editor/OS cruft
+*.swp
+*~
+.DS_Store
+
+# Scratch/tmp litter
+/tmp/
+*.tmp
