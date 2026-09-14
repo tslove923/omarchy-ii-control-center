@@ -45,6 +45,12 @@ Singleton {
                 property string style: "android"
                 property alias android: androidTogglesAdapter
             }
+            // Not part of real ii's option shape -- Omarchy-port-specific
+            // additions for this plugin's own bar-icon/panel interaction
+            // model. Both default on per the user's request; edit here to
+            // turn either off (no settings UI for these yet).
+            property bool hoverToOpen: true
+            property bool closeOnOutsideClick: true
         }
         property QtObject apps: QtObject {
             // Launched from a toggle's right-click ("configure") action.

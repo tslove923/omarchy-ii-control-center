@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import qs.Ui
 import qs.Commons
+import "ii-common/stubs"
 
 // Far-right bar icon for the ii Control Center. Clicking it toggles the
 // `overlay`-kind entry point (ui/ControlCenter.qml) via the same
@@ -18,6 +19,15 @@ BarWidget {
 
   function toggle() {
     Quickshell.execDetached(["omarchy", "shell", "shell", "toggle", "trevor.ii-control-center", "{}"])
+  }
+  // Hover-to-open uses summon, not toggle: toggle would close an
+  // already-open panel on a hover that lands right after a click, which
+  // isn't what "hover opens it" should ever do. summon() is idempotent
+  // while already open (see shell.qml's deliverIfLoaded -- a repeat call
+  // just redelivers the payload), so re-triggering it on every hover is
+  // harmless.
+  function summon() {
+    Quickshell.execDetached(["omarchy", "shell", "shell", "summon", "trevor.ii-control-center", "{}"])
   }
 
   BarIconButton {
@@ -37,5 +47,23 @@ BarWidget {
       }
     }
     onPressed: b => { if (b === Qt.LeftButton) root.toggle() }
+
+    // tooltipHovered is WidgetButton's own containsMouse-derived property
+    // (BarIconButton's base) -- functionally "is this button hovered"
+    // despite the tooltip-oriented name, so it's reused here rather than
+    // laying a second MouseArea over one that already owns press handling.
+    // Debounced open-only, matching the hover-preview pattern used in the
+    // sibling trevor.ii-mpris-indicator plugin: a short delay so a mouse
+    // just passing over the icon doesn't flash the whole sidebar open.
+    onTooltipHoveredChanged: {
+      if (tooltipHovered && Config.options.sidebar.hoverToOpen) hoverOpenTimer.restart()
+      else hoverOpenTimer.stop()
+    }
+  }
+
+  Timer {
+    id: hoverOpenTimer
+    interval: 400
+    onTriggered: root.summon()
   }
 }

@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons
 import "ii-common"
+import "ii-common/stubs"
 import "ii-common/widgets"
 import "ii-common/sidebarRight"
 import "ii-common/sidebarRight/quickToggles"
@@ -137,14 +138,22 @@ Item {
   PanelWindow {
     id: window
     visible: root.opened
-    anchors { top: true; bottom: true; right: true }
+    // Anchored to all four edges (full screen) now, not just top+bottom+
+    // right -- needed so the window itself can receive a click anywhere
+    // outside the actual sidebar card, for closeOnOutsideClick below.
+    // Everything left of the card is genuinely transparent + (when the
+    // setting is on) a click-catcher, not visually part of the panel;
+    // the card itself still only occupies cardWidth on the right, same
+    // as before.
+    anchors { top: true; bottom: true; left: true; right: true }
+    color: "transparent"
+
     // 380 clipped BottomWidgetGroup's calendar tab: the nav rail (56px) +
     // its 10px left margin + row spacing (20px) + the calendar's own
     // natural width (7 columns * 38px day cells + 6 * 5px gaps = 296px)
     // need at least 382px inside the panel's own 32px (2*16) horizontal
     // margin -- 428px total minimum. 440 leaves a little breathing room.
-    implicitWidth: 440
-    color: "transparent"
+    property int cardWidth: 440
 
     WlrLayershell.namespace: "ii-control-center"
     WlrLayershell.layer: WlrLayer.Overlay
@@ -153,8 +162,29 @@ Item {
     // sidebarRight, which is click/hover driven, not modal).
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
+    // Click-outside-to-close. Only covers the region left of the card --
+    // a plain MouseArea with no visible content, consuming (not
+    // forwarding) the one click that lands on it, same idiom
+    // omarchy.clipboard's own full-screen overlay uses for its click-away
+    // dismiss. Gated on the config default-on setting; when off, this
+    // region is otherwise fully inert (no MouseArea at all), so anything
+    // behind the panel is unaffected either way -- it was never
+    // click-through before this change and isn't meant to become so now.
+    MouseArea {
+      anchors {
+        top: parent.top
+        bottom: parent.bottom
+        left: parent.left
+        right: card.left
+      }
+      enabled: Config.options.sidebar.closeOnOutsideClick
+      onClicked: root.close()
+    }
+
     Rectangle {
-      anchors.fill: parent
+      id: card
+      anchors { top: parent.top; bottom: parent.bottom; right: parent.right }
+      width: window.cardWidth
       color: Color.popups.background
       border.color: Color.popups.border
       border.width: 1
