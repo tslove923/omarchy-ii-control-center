@@ -44,7 +44,23 @@ Item {
   property bool opened: false
   property bool editMode: false
   function open(payloadJson) { opened = true }
-  function close() { opened = false }
+  // Closing this outer panel must not leave an inner WindowDialog (wifi /
+  // bluetooth / volume) "logically open" just because the panel's own
+  // window went invisible out from under it -- an inner dialog Item's own
+  // `visible` binding (visible: root.show) never changes on its own here,
+  // so its onVisibleChanged side effects (e.g. BluetoothDialog stopping
+  // Bluetooth discovery) would never fire. This was the confirmed root
+  // cause of discovery being left running indefinitely: this close() is
+  // called by the bar icon/keybind toggle AND by the blow-off-some-steam
+  // auto-close, and previously only ever touched `opened`. Explicitly
+  // dismiss any loaded dialog first so its own dismiss()/onVisibleChanged
+  // path runs normally.
+  function close() {
+    if (wifiDialogLoader.item) wifiDialogLoader.item.dismiss()
+    if (bluetoothDialogLoader.item) bluetoothDialogLoader.item.dismiss()
+    if (audioDialogLoader.item) audioDialogLoader.item.dismiss()
+    opened = false
+  }
 
   visible: opened
 
@@ -248,6 +264,7 @@ Item {
       // button / scrim click / Esc), instead of a Connections{ onDismiss }
       // handler (which needs an actual `dismiss` signal to fire on).
       Loader {
+        id: wifiDialogLoader
         anchors.fill: parent
         z: 9999
         active: root.showWifiDialog
@@ -259,6 +276,7 @@ Item {
         }
       }
       Loader {
+        id: bluetoothDialogLoader
         anchors.fill: parent
         z: 10000
         active: root.showBluetoothDialog
@@ -270,6 +288,7 @@ Item {
         }
       }
       Loader {
+        id: audioDialogLoader
         anchors.fill: parent
         z: 10001
         active: root.showAudioDialog
